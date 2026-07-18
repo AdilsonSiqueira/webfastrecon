@@ -45,6 +45,7 @@ class Scanner:
         self.force = getattr(args, 'force', False)
         self.wordlist = args.wordlist
         self.rate_limit = (args.threads is None)
+        self.identify_only = getattr(args, 'identify_only', False) or (p == 'auto' and not getattr(args, 'scan', False))
         self.threads = 1 if args.threads is None else max(1, args.threads)
         self.output = args.output
         self.outfmt = args.format
@@ -243,15 +244,15 @@ class Scanner:
 
         if self.profile == 'auto':
             if detected:
-                print(f"{GREEN}{detected.upper()}{RESET} - perfil detectado")
+                print(f"CMS detectado - {GREEN}{detected.upper()}{RESET}")
                 self.profile = detected
                 self.profile_matched = True
             else:
-                print('Não foi possível detectar o perfil; prosseguindo com "auto".')
+                print('Não foi possível detectar o CMS; prosseguindo com "auto".')
 
         else:
             if detected and detected == self.profile:
-                print(f"{GREEN}{self.profile.upper()}{RESET} - corresponde ao perfil solicitado")
+                print(f"{GREEN}{self.profile.upper()}{RESET} - CMS carregado")
                 self.profile_matched = True
             elif detected and detected != self.profile:
                 # mismatch -> colored output and abort
@@ -267,6 +268,10 @@ class Scanner:
                     print(f"{RED}NÃO FOI POSSÍVEL DETECTAR O SERVIDOR{RESET}")
                     print(f"Solicitado: {self.profile.upper()} — abortando. Use --force para forçar o scan se necessário.")
                     return
+
+        if self.identify_only:
+            print('\n[INFO] Identificação concluída.')
+            return
 
         paths = self.load_wordlist()
         if not paths:

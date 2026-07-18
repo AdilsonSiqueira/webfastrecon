@@ -23,6 +23,8 @@ def build_parser():
     p.add_argument('--version', action='store_true', help='Exibir versão')
     p.add_argument('--force', action='store_true', help='Ignorar validação de perfil e forçar scan')
     p.add_argument('--topfiles', action='store_true', help='Verificar arquivos sensíveis/padrão (top files)')
+    p.add_argument('--identify-only', action='store_true', help='Apenas identificar o CMS e não executar a varredura')
+    p.add_argument('--scan', action='store_true', help='Executar a varredura mesmo quando -t auto for usado')
     return p
 
 
@@ -49,7 +51,11 @@ def main():
     print(f"[*] Wordlist...........: {wl}")
     print(f"[*] Timeout............: {args.timeout}s\n")
 
-    print('[INFO] Starting scan...\n')
+    is_auto_profile = (args.type or 'auto').lower() == 'auto'
+    if args.identify_only or (is_auto_profile and not args.scan):
+        print('[INFO] Modo identificação apenas: não será feita varredura.\n')
+    else:
+        print('[INFO] Starting scan...\n')
 
     scanner = Scanner(args)
     scanner.run()

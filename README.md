@@ -23,9 +23,13 @@ python3 cmspathfinder.py -u http://site.com -t joomla
 ```bash
 python3 cmspathfinder.py -u http://site.com -t wordpress -T 8 -f json -o report.json
 ```
-- Auto-detect CMS and run with 1 req/s (no `-T`):
+- Auto-detect CMS and stop after identification (no scan):
 ```bash
 python3 cmspathfinder.py -u http://site.com -t auto
+```
+- Force the scan even with `-t auto`:
+```bash
+python3 cmspathfinder.py -u http://site.com -t auto --scan
 ```
 
 Example
@@ -65,9 +69,13 @@ pip install -r requirements.txt
 
 Exemplos rápidos:
 
-- Detectar CMS automaticamente (1 req/s sem `-T`):
+- Detectar CMS automaticamente e parar após a identificação:
 ```bash
 python3 cmspathfinder.py -u https://example.com -t auto
+```
+- Forçar a varredura mesmo com `-t auto`:
+```bash
+python3 cmspathfinder.py -u https://example.com -t auto --scan
 ```
 - Scan Joomla com 8 threads e salvar JSON:
 ```bash
@@ -76,6 +84,10 @@ python3 cmspathfinder.py -u https://example.com -t joomla -T 8 -f json -o report
 - Verificar arquivos sensíveis (`--topfiles`):
 ```bash
 python3 cmspathfinder.py -u https://example.com -t wordpress --topfiles
+```
+- Apenas identificar o CMS sem fazer varredura:
+```bash
+python3 cmspathfinder.py -u https://example.com -t auto --identify-only
 ```
 
 ## Como publicar no GitHub (tutorial rápido)
@@ -116,3 +128,5 @@ gh repo create AdilsonSiqueira/cmspathfinder --public --source=. --remote=origin
 GitHub: https://github.com/AdilsonSiqueira
 
 Donate: https://ko-fi.com/adilsonsiqueira
+
+by AdilsonSiqueira

@@ -1,0 +1,13 @@
+administrator/
+configuration.php
+templates/
+components/
+modules/
+media/
+cache/
+data/
+plugins/
+index.php
+robots.txt
+
+sitemap.xml

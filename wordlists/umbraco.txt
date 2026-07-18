@@ -1,0 +1,8 @@
+Umbraco/
+Umbraco_Client/
+App_Plugins/
+config/
+css/
+
+robots.txt
+sitemap.xml

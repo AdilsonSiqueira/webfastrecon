@@ -1,0 +1,13 @@
+vendor/
+.env
+storage/
+bootstrap/cache/
+artisan
+composer.json
+phpunit.xml
+.env.example
+README.md
+public/
+
+robots.txt
+sitemap.xml

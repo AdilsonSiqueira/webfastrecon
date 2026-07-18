@@ -1,0 +1,8 @@
+DesktopModules/
+Portals/
+Admin/
+Providers/
+Install/
+
+robots.txt
+sitemap.xml

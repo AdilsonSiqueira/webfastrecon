@@ -1,0 +1,8 @@
+admin/
+apps/
+collections/
+products/
+cart
+
+robots.txt
+sitemap.xml

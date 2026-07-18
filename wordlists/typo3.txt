@@ -1,0 +1,11 @@
+typo3/
+typoscript/
+typo3conf/
+fileadmin/
+index.php
+install.php
+typo3_src/
+localconf.php
+
+robots.txt
+sitemap.xml

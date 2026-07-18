@@ -1,0 +1,13 @@
+admin/
+install/
+system/
+catalog/
+image/
+config.php
+index.php
+upload/
+download/
+token=
+
+robots.txt
+sitemap.xml

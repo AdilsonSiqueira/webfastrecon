@@ -1,0 +1,7 @@
+assets/
+public/
+silverstripe-cache/
+framework/
+
+robots.txt
+sitemap.xml

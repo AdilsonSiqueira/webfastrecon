@@ -1,0 +1,17 @@
+wp-admin
+wp-login.php
+wp-content/
+wp-includes/
+xmlrpc.php
+readme.html
+license.txt
+wp-json/
+wp-admin/install.php
+wp-admin/admin-ajax.php
+wp-config.php
+wp-content/uploads/
+wp-content/plugins/
+wp-content/themes/
+
+robots.txt
+sitemap.xml

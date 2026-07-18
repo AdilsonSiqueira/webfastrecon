@@ -1,0 +1,9 @@
+ghost/
+content/
+config.production.json
+core/
+admin/
+assets/
+
+robots.txt
+sitemap.xml

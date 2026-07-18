@@ -1,0 +1,10 @@
+moodle/
+config.php
+admin/
+login/index.php
+course/view.php
+lib/
+backup/
+
+robots.txt
+sitemap.xml

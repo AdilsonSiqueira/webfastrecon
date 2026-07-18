@@ -1,0 +1,13 @@
+admin/
+install/
+config/settings.inc.php
+modules/
+themes/
+img/
+js/
+api/
+order.php
+cart.php
+product.php
+sitemap.xml
+robots.txt

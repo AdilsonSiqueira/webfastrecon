@@ -1,0 +1,8 @@
+system/
+themes/
+images/
+admin.php
+index.php
+
+robots.txt
+sitemap.xml

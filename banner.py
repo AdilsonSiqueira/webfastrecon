@@ -1,11 +1,11 @@
 BANNER_RAW = r"""
-__        __     _     ____  _           _
-\ \      / /__ _| |__ / ___|| |__   __ _| |_
- \ \ /\ / / _ \ | '_ \\___ \| '_ \ / _` | __|
-  \ V  V /  __/ | |_) |___) | | | | (_| | |_
-   \_/\_/ \___|_|_.__/|____/|_| |_|\__,_|\__|
-
-CMSPathFinder
+CMSPathFinder           by AdilsonSiqueira
+   ____ __  __ ____  ____       _   _
+  / ___|  \/  / ___||  _ \ __ _| |_| |__
+ | |   | |\/| \___ \| |_) / _` | __| '_ \
+ | |___| |  | |___) |  __/ (_| | |_| | | |
+  \____|_|  |_|____/|_|   \__,_|\__|_| |_|"
+                                          
 """
 
 
@@ -37,8 +37,8 @@ def get_banner(colored=True):
    for idx, line in enumerate(lines):
       # slightly shift color per line
       shift = idx / max(1, len(lines) - 1)
-      start = (0, 100, 20)
-      end = (160, 120, 10)
+      start = (24, 120, 240)
+      end = (240, 232, 120)
       # blend start/end by shift to vary per line
       s = (int(start[0] * (1 - shift)), int(start[1] * (1 - shift)), int(start[2] * (1 - shift)))
       e = (int(end[0] * (1 - shift) + start[0] * shift), int(end[1] * (1 - shift) + start[1] * shift), int(end[2] * (1 - shift) + start[2] * shift))

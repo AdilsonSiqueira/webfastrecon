@@ -193,18 +193,12 @@ class Scanner:
     def save_report(self):
         outpath = self.output
         if not outpath:
-            # build automatic report path
-            try:
-                host = urlparse(self.url).netloc.replace(':', '_')
-            except Exception:
-                host = 'target'
-            ext = self.outfmt
-            outpath = f'reports/{host}_{self.profile}.{ext}'
+            return None
 
         # ensure reports directory exists
         try:
             import os
-            os.makedirs(os.path.dirname(outpath), exist_ok=True)
+            os.makedirs(os.path.dirname(outpath) or '.', exist_ok=True)
         except Exception:
             pass
 
@@ -218,9 +212,32 @@ class Scanner:
                 with open(outpath, 'w', encoding='utf-8') as f:
                     f.write(html)
             else:
+                grouped = {}
+                for r in self.results:
+                    status = r.get('status')
+                    if status is None:
+                        bucket = 'ERR'
+                    elif 200 <= status < 300:
+                        bucket = '200'
+                    elif 300 <= status < 400:
+                        bucket = '300'
+                    elif 400 <= status < 500:
+                        bucket = '400'
+                    elif 500 <= status < 600:
+                        bucket = '500'
+                    else:
+                        bucket = str(status)
+                    grouped.setdefault(bucket, []).append(r)
+
+                order = ['200', '300', '400', '500', 'ERR']
                 with open(outpath, 'w', encoding='utf-8') as f:
-                    for r in self.results:
-                        f.write(f"{r['status']}\t{r['url']}\n")
+                    for bucket in order:
+                        if bucket not in grouped:
+                            continue
+                        f.write(f"[{bucket}]\n")
+                        for r in sorted(grouped[bucket], key=lambda x: (x.get('status') or 0, x.get('path'))):
+                            f.write(f"{r.get('status')}\t{r.get('url')}\n")
+                        f.write('\n')
         except Exception as e:
             print('Failed to save report:', e)
             return None
@@ -248,7 +265,9 @@ class Scanner:
                 self.profile = detected
                 self.profile_matched = True
             else:
-                print('Nenhum CMS conhecido foi identificado. O alvo não parece usar um CMS suportado ou a detecção falhou.')
+                print(f"{RED}Nenhum CMS conhecido foi identificado. O alvo não parece usar um CMS suportado ou a detecção falhou.{RESET}")
+                print('Cancelando a varredura porque nenhum CMS suportado foi detectado.')
+                return
 
         else:
             if detected and detected == self.profile:
@@ -266,7 +285,7 @@ class Scanner:
                     print(f"Aviso: não foi possível detectar automaticamente; forçando perfil solicitado: {self.profile.upper()} (--force). Prosseguindo...")
                 else:
                     print(f"{RED}Nenhum CMS conhecido foi identificado para o alvo.{RESET}")
-                    print('O servidor não parece usar um CMS suportado ou a detecção falhou.')
+                    print(f"{RED}O servidor não parece usar um CMS suportado ou a detecção falhou.{RESET}")
                     return
 
         if self.identify_only:
@@ -310,8 +329,28 @@ class Scanner:
 
         if self.results:
             print('\nFound:')
-            for r in sorted(self.results, key=lambda x: (x.get('status') or 0, x.get('path'))):
-                print(f"[{r.get('status')}] {r.get('path')}")
+            grouped = {}
+            for r in self.results:
+                status = r.get('status')
+                if status is None:
+                    bucket = 'ERR'
+                elif 200 <= status < 300:
+                    bucket = '200'
+                elif 300 <= status < 400:
+                    bucket = '300'
+                elif 400 <= status < 500:
+                    bucket = '400'
+                elif 500 <= status < 600:
+                    bucket = '500'
+                else:
+                    bucket = str(status)
+                grouped.setdefault(bucket, []).append(r)
+
+            for bucket in ['200', '300', '400', '500', 'ERR']:
+                if bucket in grouped:
+                    print(f"\n[{bucket}]")
+                    for r in sorted(grouped[bucket], key=lambda x: (x.get('status') or 0, x.get('path'))):
+                        print(f"[{r.get('status')}] {r.get('path')}")
 
     def scan_topfiles(self, elapsed=0):
         RESET = '\x1b[0m'

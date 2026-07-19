@@ -13,7 +13,7 @@ def build_parser():
     p.add_argument('-t', '--type', default='auto', help='Perfil (auto, tomcat, wordpress...)')
     p.add_argument('-w', '--wordlist', help='Wordlist personalizada (arquivo)')
     p.add_argument('-T', '--threads', type=int, default=None, help='Número de threads (omitido = 1 req/s)')
-    p.add_argument('-o', '--output', help='Salvar relatório (caminho)')
+    p.add_argument('-o', '--output', help='Salvar relatório (caminho). Se omitido, o arquivo é salvo automaticamente em reports/.')
     p.add_argument('-f', '--format', choices=['txt', 'json', 'html'], default='txt', help='Formato do relatório')
     p.add_argument('-a', '--agent', help='User-Agent personalizado')
     p.add_argument('--timeout', type=float, default=5.0, help='Timeout das requisições')
@@ -49,7 +49,11 @@ def main():
     print(f"[*] Threads............: {'1 req/s' if args.threads is None else args.threads}")
     wl = args.wordlist or f'wordlists/{args.type}.txt'
     print(f"[*] Wordlist...........: {wl}")
-    print(f"[*] Timeout............: {args.timeout}s\n")
+    print(f"[*] Timeout............: {args.timeout}s")
+    if args.output:
+        print(f"[*] Report............: {args.output}\n")
+    else:
+        print('[*] Report............: nenhum (use -o/--output para salvar)\n')
 
     is_auto_profile = (args.type or 'auto').lower() == 'auto'
     if args.identify_only or (is_auto_profile and not args.scan):

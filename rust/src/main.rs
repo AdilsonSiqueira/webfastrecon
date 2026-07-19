@@ -65,7 +65,9 @@ fn main() -> Result<()> {
     if let Some(profile) = detected.as_ref() {
         println!("CMS detectado: {}", profile);
     } else if args.r#type == "auto" {
-        println!("Nenhum CMS conhecido foi identificado. O alvo não parece usar um CMS suportado ou a detecção falhou.");
+        println!("\u{1b}[31mNenhum CMS conhecido foi identificado. O alvo não parece usar um CMS suportado ou a detecção falhou.\u{1b}[0m");
+        println!("Cancelando a varredura porque nenhum CMS suportado foi detectado.");
+        return Ok(());
     }
 
     let mut results = Vec::new();

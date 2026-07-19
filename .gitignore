@@ -1,11 +1,13 @@
+# Rust
+target/
+
+# Python
 __pycache__/
 *.pyc
-reports/
-.venv/
-venv/
-env/
-.env
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema
 *.log
-tmp/
-*.egg-info/
-dist/

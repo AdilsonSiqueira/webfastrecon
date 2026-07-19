@@ -1,0 +1,50 @@
+[200]
+200	https://www.linux.com/license.txt
+200	https://www.linux.com/readme.html
+200	https://www.linux.com/robots.txt
+200	https://www.linux.com/wp-admin/install.php
+200	https://www.linux.com/wp-config.php
+200	https://www.linux.com/wp-config.php
+200	https://www.linux.com/wp-content/
+200	https://www.linux.com/wp-content/plugins/
+200	https://www.linux.com/wp-content/themes/
+
+[300]
+301	https://www.linux.com/sitemap.xml
+301	https://www.linux.com/wp-admin
+302	https://www.linux.com/wp-admin/
+
+[400]
+400	https://www.linux.com/wp-admin/admin-ajax.php
+401	https://www.linux.com/wp-json/
+403	https://www.linux.com/.git/
+403	https://www.linux.com/.git/config
+403	https://www.linux.com/.gitignore
+403	https://www.linux.com/wp-content/uploads/
+403	https://www.linux.com/wp-includes/
+403	https://www.linux.com/xmlrpc.php
+404	https://www.linux.com/.env
+404	https://www.linux.com/.env.example
+404	https://www.linux.com/.htaccess
+404	https://www.linux.com/.htpasswd
+404	https://www.linux.com/adminer.php
+404	https://www.linux.com/administrator/
+404	https://www.linux.com/backup.sql
+404	https://www.linux.com/backup.tar.gz
+404	https://www.linux.com/backup.zip
+404	https://www.linux.com/config.bak
+404	https://www.linux.com/config.php
+404	https://www.linux.com/config.php.bak
+404	https://www.linux.com/configuration.php
+404	https://www.linux.com/db.sql
+404	https://www.linux.com/dump.sql
+404	https://www.linux.com/dump.zip
+404	https://www.linux.com/old.zip
+404	https://www.linux.com/old/
+404	https://www.linux.com/phpinfo.php
+404	https://www.linux.com/phpmyadmin/
+404	https://www.linux.com/pma/
+404	https://www.linux.com/site.zip
+404	https://www.linux.com/wp-login.php
+404	https://www.linux.com/wp-login.php
+

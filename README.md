@@ -121,38 +121,6 @@ cargo run -- -u https://example.com -t auto --identify-only
 - A versão Rust é uma alternativa mais performática e mantêm o mesmo fluxo de uso, com comandos parecidos.
 - Ambos aceitam as opções principais: `-u/--url`, `-t/--type`, `-w/--wordlist`, `-T/--threads`, `-o/--output`, `-f/--format`, `--topfiles` e `--identify-only`.
 
-## Como publicar no GitHub (tutorial rápido)
-
-1. Crie o repositório no GitHub: https://github.com/new — nome sugerido: `cmspathfinder`.
-2. No seu repositório local, confirme as mudanças e adicione o remote:
-
-```bash
-git add .
-git commit -m "Initial CMSPathFinder project"
-git remote add origin https://github.com/AdilsonSiqueira/cmspathfinder.git
-git branch -M main
-git push -u origin main
-```
-
-Se o Git pedir usuário/senha ao `push`, gere um Personal Access Token (PAT) no GitHub e use-o como senha.
-
-### Usando `gh` (GitHub CLI) — recomendado
-
-```bash
-gh auth login
-gh repo create AdilsonSiqueira/cmspathfinder --public --source=. --remote=origin --push
-```
-
-## Gerar token (PAT)
-
-1. No GitHub: Settings → Developer settings → Personal access tokens → Fine‑grained tokens → Generate new token.
-2. Dê permissão `Contents: Read & write` para o repositório e copie o token (apenas mostrado uma vez).
-3. Use o token como senha no `git push` quando solicitado.
-
-## Contribuição
-
-- Abra issues e pull requests no GitHub.
-- Atualize as wordlists em `wordlists/` e adicione `wordlists/topfiles/<cms>.txt` quando pertinente.
 
 ## Contato e Doações
 

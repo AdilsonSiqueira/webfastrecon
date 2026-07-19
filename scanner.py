@@ -248,11 +248,11 @@ class Scanner:
                 self.profile = detected
                 self.profile_matched = True
             else:
-                print('Não foi possível detectar o CMS; prosseguindo com "auto".')
+                print('Nenhum CMS conhecido foi identificado. O alvo não parece usar um CMS suportado ou a detecção falhou.')
 
         else:
             if detected and detected == self.profile:
-                print(f"{GREEN}{self.profile.upper()}{RESET} - CMS carregado")
+                print(f"{GREEN}{self.profile.upper()}{RESET} - CMS linkado")
                 self.profile_matched = True
             elif detected and detected != self.profile:
                 # mismatch -> colored output and abort
@@ -265,8 +265,8 @@ class Scanner:
                 if self.force:
                     print(f"Aviso: não foi possível detectar automaticamente; forçando perfil solicitado: {self.profile.upper()} (--force). Prosseguindo...")
                 else:
-                    print(f"{RED}NÃO FOI POSSÍVEL DETECTAR O SERVIDOR{RESET}")
-                    print(f"Solicitado: {self.profile.upper()} — abortando. Use --force para forçar o scan se necessário.")
+                    print(f"{RED}Nenhum CMS conhecido foi identificado para o alvo.{RESET}")
+                    print('O servidor não parece usar um CMS suportado ou a detecção falhou.')
                     return
 
         if self.identify_only:

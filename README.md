@@ -69,26 +69,57 @@ pip install -r requirements.txt
 
 Exemplos rápidos:
 
-- Detectar CMS automaticamente e parar após a identificação:
+- Detectar CMS automaticamente e parar após a identificação (Python):
 ```bash
 python3 cmspathfinder.py -u https://example.com -t auto
 ```
-- Forçar a varredura mesmo com `-t auto`:
+- Detectar CMS automaticamente e parar após a identificação (Rust):
+```bash
+cd rust
+cargo run -- -u https://example.com -t auto
+```
+- Forçar a varredura mesmo com `-t auto` (Python):
 ```bash
 python3 cmspathfinder.py -u https://example.com -t auto --scan
 ```
-- Scan Joomla com 8 threads e salvar JSON:
+- Forçar a varredura mesmo com `-t auto` (Rust):
+```bash
+cd rust
+cargo run -- -u https://example.com -t auto --scan
+```
+- Scan Joomla com 8 threads e salvar JSON (Python):
 ```bash
 python3 cmspathfinder.py -u https://example.com -t joomla -T 8 -f json -o report.json
 ```
-- Verificar arquivos sensíveis (`--topfiles`):
+- Scan Joomla com 8 threads e salvar JSON (Rust):
+```bash
+cd rust
+cargo run -- -u https://example.com -t joomla -T 8 -f json -o report.json
+```
+- Verificar arquivos sensíveis (`--topfiles`) (Python):
 ```bash
 python3 cmspathfinder.py -u https://example.com -t wordpress --topfiles
 ```
-- Apenas identificar o CMS sem fazer varredura:
+- Verificar arquivos sensíveis (`--topfiles`) (Rust):
+```bash
+cd rust
+cargo run -- -u https://example.com -t wordpress --topfiles
+```
+- Apenas identificar o CMS sem fazer varredura (Python):
 ```bash
 python3 cmspathfinder.py -u https://example.com -t auto --identify-only
 ```
+- Apenas identificar o CMS sem fazer varredura (Rust):
+```bash
+cd rust
+cargo run -- -u https://example.com -t auto --identify-only
+```
+
+### Python vs Rust
+
+- A versão Python é a mais simples e está pronta para uso direto.
+- A versão Rust é uma alternativa mais performática e mantêm o mesmo fluxo de uso, com comandos parecidos.
+- Ambos aceitam as opções principais: `-u/--url`, `-t/--type`, `-w/--wordlist`, `-T/--threads`, `-o/--output`, `-f/--format`, `--topfiles` e `--identify-only`.
 
 ## Como publicar no GitHub (tutorial rápido)
 

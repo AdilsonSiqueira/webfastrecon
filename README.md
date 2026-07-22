@@ -12,6 +12,7 @@ Objetivo do projeto:
 - Identifica tecnologias por fingerprint (headers + conteudo).
 - Em modo auto, detecta multiplos perfis (exemplo: WordPress + Nginx).
 - Faz scan de diretorios/arquivos por perfil detectado.
+- Suporta autenticacao HTTP Basic para scan em alvo protegido com usuario/senha.
 - No Rust, em auto + scan, separa a varredura por categoria e por perfil.
 - Salva relatorio em txt, json ou html quando output e informado.
 
@@ -65,6 +66,8 @@ cargo check
 1. Identificar stack
 2. Rodar scan direcionado
 3. Salvar relatorio quando necessario
+
+Se o alvo pedir autenticacao HTTP Basic, use --username e --password junto com os comandos de scan.
 
 ### Comportamento de -t auto
 

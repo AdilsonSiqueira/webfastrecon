@@ -51,6 +51,8 @@ class Scanner:
         self.output = args.output
         self.outfmt = args.format
         self.agent = args.agent
+        self.username = getattr(args, 'username', None)
+        self.password = getattr(args, 'password', None)
         self.timeout = args.timeout
         self.proxy = args.proxy
         self.follow = args.follow
@@ -62,6 +64,8 @@ class Scanner:
         self.session = requests.Session()
         if self.agent:
             self.session.headers.update({'User-Agent': self.agent})
+        if self.username and self.password:
+            self.session.auth = (self.username, self.password)
         self.session.max_redirects = 10
         if self.proxy:
             self.session.proxies.update({'http': self.proxy, 'https': self.proxy})

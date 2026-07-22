@@ -99,6 +99,12 @@ Salvar JSON:
 python3 webfastrecon.py -u https://example.com -t joomla -T 8 -f json -o report.json
 ```
 
+Com autenticacao HTTP Basic:
+
+```bash
+python3 webfastrecon.py -u https://example.com -t wordpress --username admin --password senha123
+```
+
 ### Exemplos Rust
 
 Identificar somente:
@@ -128,6 +134,38 @@ Salvar JSON:
 cd rust
 cargo run -- --url https://example.com -t joomla -f json -o report.json
 ```
+
+Com autenticacao HTTP Basic:
+
+```bash
+cd rust
+cargo run -- --url https://example.com -t wordpress --username admin --password senha123
+```
+
+### Autenticacao (usuario e senha)
+
+Suporte atual:
+- HTTP Basic Auth com `--username` e `--password` (Python e Rust).
+- As credenciais sao aplicadas em todas as requisicoes da execucao.
+
+Regras:
+- `--username` e `--password` devem ser usados juntos.
+- O programa exibe apenas o usuario na saida e nao imprime a senha.
+
+Exemplos:
+
+```bash
+# Python
+python3 webfastrecon.py -u https://example.com -t auto --scan --username admin --password senha123
+
+# Rust
+cd rust
+cargo run -- --url https://example.com -t auto --scan --username admin --password senha123
+```
+
+Limitacao importante:
+- Login por formulario (sessao/cookie, CSRF, MFA etc.) nao faz parte do fluxo atual.
+- Para esses casos, o recomendado e usar proxy/interceptor e evoluir o scanner para header/cookie customizado.
 
 ### Porta e alvo
 

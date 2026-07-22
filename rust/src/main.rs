@@ -1,6 +1,8 @@
 use anyhow::{Context, Result};
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use clap::Parser;
 use reqwest::blocking::Client;
+use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 use serde::Serialize;
 use std::fs;
 use std::path::Path;
@@ -36,6 +38,12 @@ struct Args {
 
     #[arg(short = 'a', long)]
     agent: Option<String>,
+
+    #[arg(long, requires = "password")]
+    username: Option<String>,
+
+    #[arg(long, requires = "username")]
+    password: Option<String>,
 
     #[arg(long, default_value_t = 5.0)]
     timeout: f64,
@@ -111,6 +119,9 @@ fn main() -> Result<()> {
             .unwrap_or_else(|| format!("wordlists/{}.txt", requested_profile))
     );
     println!("[*] Timeout............: {}s", args.timeout);
+    if let Some(username) = args.username.as_ref() {
+        println!("[*] Auth...............: Basic ({username})");
+    }
     if let Some(out) = args.output.as_ref() {
         println!("[*] Report............: {out}\n");
     } else {
@@ -469,6 +480,15 @@ fn build_client(args: &Args) -> Result<Client> {
 
     if let Some(agent) = &args.agent {
         client_builder = client_builder.user_agent(agent.clone());
+    }
+
+    if let (Some(username), Some(password)) = (&args.username, &args.password) {
+        let mut headers = HeaderMap::new();
+        let encoded = STANDARD.encode(format!("{username}:{password}"));
+        let auth_header = HeaderValue::from_str(&format!("Basic {encoded}"))
+            .context("failed to build Authorization header for Basic Auth")?;
+        headers.insert(AUTHORIZATION, auth_header);
+        client_builder = client_builder.default_headers(headers);
     }
 
     if let Some(proxy) = &args.proxy {

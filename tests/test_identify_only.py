@@ -21,6 +21,8 @@ class IdentifyOnlyTests(unittest.TestCase):
             output=None,
             format='txt',
             agent=None,
+            username=None,
+            password=None,
             timeout=5.0,
             proxy=None,
             follow=False,

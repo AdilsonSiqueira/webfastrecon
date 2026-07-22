@@ -16,6 +16,8 @@ def build_parser():
     p.add_argument('-o', '--output', help='Salvar relatorio (caminho). Se omitido, o arquivo e salvo automaticamente em reports/.')
     p.add_argument('-f', '--format', choices=['txt', 'json', 'html'], default='txt', help='Formato do relatorio')
     p.add_argument('-a', '--agent', help='User-Agent personalizado')
+    p.add_argument('--username', help='Usuario para autenticacao HTTP Basic')
+    p.add_argument('--password', help='Senha para autenticacao HTTP Basic')
     p.add_argument('--timeout', type=float, default=5.0, help='Timeout das requisicoes')
     p.add_argument('--proxy', help='Proxy HTTP/SOCKS (ex: http://127.0.0.1:8080)')
     p.add_argument('--follow', action='store_true', help='Seguir redirecionamentos')
@@ -31,6 +33,10 @@ def build_parser():
 def main():
     parser = build_parser()
     args = parser.parse_args()
+
+    if bool(args.username) != bool(args.password):
+        parser.error('Use --username e --password juntos para autenticacao HTTP Basic.')
+
     if args.version:
         print(VERSION)
         return
@@ -50,6 +56,8 @@ def main():
     wl = args.wordlist or f'wordlists/{args.type}.txt'
     print(f"[*] Wordlist...........: {wl}")
     print(f"[*] Timeout............: {args.timeout}s")
+    if args.username:
+        print(f"[*] Auth...............: Basic ({args.username})")
     if args.output:
         print(f"[*] Report............: {args.output}\n")
     else:

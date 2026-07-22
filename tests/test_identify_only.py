@@ -2,7 +2,7 @@ import unittest
 from argparse import Namespace
 from unittest.mock import patch
 
-from cmspathfinder import build_parser
+from webfastrecon import build_parser
 from scanner import Scanner
 
 

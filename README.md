@@ -1,43 +1,45 @@
-# CMSPathFinder
+# WebFastRecon
 
-CMSPathFinder is a lightweight scanner for standard CMS paths and files only.
+WebFastRecon is a lightweight web stack recon tool focused on identification first and targeted scanning second.
 
-Features
-- CMS fingerprinting (WordPress, Drupal, Joomla, Magento, PrestaShop, OpenCart, Ghost, TYPO3, Concrete5, Umbraco, Shopify, SilverStripe, DotNetNuke, ExpressionEngine, Laravel, Moodle)
-- Scans only CMS default paths and files, not generic directory brute-force
-- Multi-threaded CMS path enumeration with optional 1 req/s rate limiting
-- Per-CMS wordlists and top-files checks
-- Report output in `txt`, `json` and `html` formats
+What it does
+- Identifies one primary profile in this order: application -> framework -> runtime -> web server.
+- Runs targeted path checks using profile-based wordlists (no broad brute-force).
+- Optionally checks top files and default sensitive paths for the detected/selected profile.
+- Saves reports in `txt`, `json`, or `html`.
+- In `-t auto`, both Python and Rust fingerprint the full stack scope: CMS/app, framework, runtime, and web server.
+- Auto examples covered by detection include: WordPress/Drupal/Joomla, Jenkins/Grafana/Kibana/phpMyAdmin, PHP/Node.js/Python WSGI/ASP.NET, Apache/Nginx/IIS/Tomcat/OpenResty/Caddy.
+
+Profiles (high level)
+- Web server: Apache, Nginx, IIS, LiteSpeed, OpenLiteSpeed, Caddy, OpenResty, Tomcat, Jetty, Undertow, Cherokee, Lighttpd, H2O, Tengine, Oracle HTTP Server, IBM HTTP Server.
+- Runtime/platform: PHP, ASP.NET, ASP.NET Core, JSP/Servlet, Java EE, Python WSGI, Node.js, Ruby, Perl CGI, Go HTTP, ColdFusion.
+- Framework: Laravel, Symfony, Django, Flask, FastAPI, Express, Rails.
+- Application/CMS/panel: WordPress, Drupal, Joomla, Magento, Ghost, Moodle, MediaWiki, Jenkins, Grafana, Kibana, SonarQube, GitLab, Gitea, Portainer, phpMyAdmin, Adminer, Webmin, cPanel, Plesk, DirectAdmin and others already in the project.
 
 Quick usage
 ```bash
-python3 cmspathfinder.py -u https://target.example/ -t drupal -T 10 --topfiles
+python3 webfastrecon.py -u https://target.example -t auto
 ```
 
-Examples
-- Scan Joomla with default settings:
+Targeted scan after identify
 ```bash
-python3 cmspathfinder.py -u http://site.com -t joomla
-```
-- Scan WordPress with 8 threads and save JSON report:
-```bash
-python3 cmspathfinder.py -u http://site.com -t wordpress -T 8 -f json -o report.json
-```
-- Auto-detect CMS and stop after identification (no scan):
-```bash
-python3 cmspathfinder.py -u http://site.com -t auto
-```
-- Force the scan even with `-t auto`:
-```bash
-python3 cmspathfinder.py -u http://site.com -t auto --scan
+python3 webfastrecon.py -u https://target.example -t auto --scan --topfiles
 ```
 
-Example
-- Detects CMS automatically: `-t auto`
-- Force a profile: `--force`
+Force a specific profile
+```bash
+python3 webfastrecon.py -u https://target.example -t jenkins -T 8
+```
 
-Wordlists
-- Stored in `wordlists/` per CMS. Each list includes `robots.txt` and `sitemap.xml`.
+Save JSON report
+```bash
+python3 webfastrecon.py -u https://target.example -t wordpress -f json -o reports/wp.json
+```
+
+Compatibility command
+```bash
+python3 webfastrecon.py -u https://target.example -t auto
+```
 
 ## Instalação
 
@@ -48,7 +50,7 @@ Requisitos mínimos:
 Instalação (Unix / WSL):
 
 ```bash
-cd /mnt/c/Users/Adilson/Desktop/PROJETOS/cmspathfinder
+cd /mnt/c/Users/Adilson/Desktop/PROJETOS/webfastrecon
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -58,7 +60,7 @@ pip install -r requirements.txt
 Instalação (Windows PowerShell):
 
 ```powershell
-cd C:\Users\Adilson\Desktop\PROJETOS\cmspathfinder
+cd C:\Users\Adilson\Desktop\PROJETOS\webfastrecon
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install --upgrade pip
@@ -67,20 +69,25 @@ pip install -r requirements.txt
 
 ## Uso
 
+Comportamento do `-t auto` (Python e Rust):
+- Faz identificação ampla de tecnologia (servidor + CMS/app + runtime/framework).
+- Padrão: identifica e para (não inicia varredura).
+- Para varrer depois da identificação, use `--scan`.
+
 Exemplos rápidos:
 
-- Detectar CMS automaticamente e parar após a identificação (Python):
+- Detectar perfil automaticamente e parar após a identificação (Python):
 ```bash
-python3 cmspathfinder.py -u https://example.com -t auto
+python3 webfastrecon.py -u https://example.com -t auto
 ```
-- Detectar CMS automaticamente e parar após a identificação (Rust):
+- Detectar perfil automaticamente e parar após a identificação (Rust):
 ```bash
 cd rust
 cargo run -- -u https://example.com -t auto
 ```
 - Forçar a varredura mesmo com `-t auto` (Python):
 ```bash
-python3 cmspathfinder.py -u https://example.com -t auto --scan
+python3 webfastrecon.py -u https://example.com -t auto --scan
 ```
 - Forçar a varredura mesmo com `-t auto` (Rust):
 ```bash
@@ -89,7 +96,7 @@ cargo run -- -u https://example.com -t auto --scan
 ```
 - Scan Joomla com 8 threads e salvar JSON (Python):
 ```bash
-python3 cmspathfinder.py -u https://example.com -t joomla -T 8 -f json -o report.json
+python3 webfastrecon.py -u https://example.com -t joomla -T 8 -f json -o report.json
 ```
 - Scan Joomla com 8 threads e salvar JSON (Rust):
 ```bash
@@ -98,18 +105,18 @@ cargo run -- -u https://example.com -t joomla -T 8 -f json -o report.json
 ```
 - Verificar arquivos sensíveis (`--topfiles`) (Python):
 ```bash
-python3 cmspathfinder.py -u https://example.com -t wordpress --topfiles
+python3 webfastrecon.py -u https://example.com -t wordpress --topfiles
 ```
 - Verificar arquivos sensíveis (`--topfiles`) (Rust):
 ```bash
 cd rust
 cargo run -- -u https://example.com -t wordpress --topfiles
 ```
-- Apenas identificar o CMS sem fazer varredura (Python):
+- Apenas identificar tecnologia sem fazer varredura (Python):
 ```bash
-python3 cmspathfinder.py -u https://example.com -t auto --identify-only
+python3 webfastrecon.py -u https://example.com -t auto --identify-only
 ```
-- Apenas identificar o CMS sem fazer varredura (Rust):
+- Apenas identificar tecnologia sem fazer varredura (Rust):
 ```bash
 cd rust
 cargo run -- -u https://example.com -t auto --identify-only

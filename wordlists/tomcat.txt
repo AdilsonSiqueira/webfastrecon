@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+manager/html
+host-manager/html
+docs/
+examples/

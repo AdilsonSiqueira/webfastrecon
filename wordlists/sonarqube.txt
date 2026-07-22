@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+sessions/new
+api/system/status
+api/server/version
+admin

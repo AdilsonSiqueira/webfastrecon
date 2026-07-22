@@ -1,0 +1,8 @@
+robots.txt
+sitemap.xml
+users/sign_in
+explore
+help
+-/health
+-/readiness
+-/liveness

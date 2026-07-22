@@ -1,5 +1,5 @@
 [package]
-name = "cmspathfinder-rs"
+name = "webfastrecon-rs"
 version = "0.1.0"
 edition = "2021"
 

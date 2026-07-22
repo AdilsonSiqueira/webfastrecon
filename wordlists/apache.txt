@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+server-status
+server-info
+icons/
+cgi-bin/

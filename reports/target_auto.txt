@@ -1,0 +1,3 @@
+200	https://telemidia.net.br/
+302	https://telemidia.net.br/wp-admin/
+404	https://telemidia.net.br/administrator/

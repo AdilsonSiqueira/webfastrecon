@@ -1,0 +1,10 @@
+robots.txt
+sitemap.xml
+login
+manage
+whoAmI/
+script
+scriptText
+computer/
+job/
+api/json

@@ -1,0 +1,10 @@
+robots.txt
+sitemap.xml
+admin/
+login/
+api/
+api/docs
+swagger/
+openapi.json
+static/
+assets/

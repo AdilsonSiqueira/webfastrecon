@@ -1,5 +1,5 @@
 import sys
-sys.path.append(r"C:\Users\Adilson\Desktop\PROJETOS\cmspathfinder")
+sys.path.append(r"C:\Users\Adilson\Desktop\PROJETOS\webfastrecon")
 import requests
 import argparse
 from scanner import Scanner

@@ -1,0 +1,7 @@
+robots.txt
+sitemap.xml
+login
+api/health
+api/frontend/settings
+public/build/
+dashboard/

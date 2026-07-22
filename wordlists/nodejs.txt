@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+package.json
+api/
+health
+metrics

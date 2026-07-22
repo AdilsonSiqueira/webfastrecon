@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+login
+api/status
+app/home
+api/saved_objects/

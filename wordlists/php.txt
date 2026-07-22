@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+index.php
+phpinfo.php
+.env
+vendor/

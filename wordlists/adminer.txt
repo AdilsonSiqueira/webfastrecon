@@ -1,0 +1,5 @@
+robots.txt
+sitemap.xml
+adminer.php
+adminer/
+login

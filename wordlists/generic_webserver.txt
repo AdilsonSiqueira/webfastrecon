@@ -1,0 +1,12 @@
+robots.txt
+sitemap.xml
+.well-known/
+status
+health
+metrics
+server-status
+server-info
+nginx_status
+stub_status
+icons/
+cgi-bin/

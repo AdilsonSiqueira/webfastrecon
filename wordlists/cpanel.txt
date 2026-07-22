@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+cpanel
+whm
+webmail
+cgi-sys/

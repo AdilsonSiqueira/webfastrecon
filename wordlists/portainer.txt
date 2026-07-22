@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+#!/auth
+api/status
+api/endpoints
+api/users/admin/check

@@ -5,6 +5,8 @@
 200	https://www.linux.com/wp-admin/install.php
 200	https://www.linux.com/wp-config.php
 200	https://www.linux.com/wp-config.php
+200	https://www.linux.com/wp-config.php
+200	https://www.linux.com/wp-content/
 200	https://www.linux.com/wp-content/
 200	https://www.linux.com/wp-content/plugins/
 200	https://www.linux.com/wp-content/themes/
@@ -12,6 +14,7 @@
 [300]
 301	https://www.linux.com/sitemap.xml
 301	https://www.linux.com/wp-admin
+302	https://www.linux.com/wp-admin/
 302	https://www.linux.com/wp-admin/
 
 [400]
@@ -21,6 +24,7 @@
 403	https://www.linux.com/.git/config
 403	https://www.linux.com/.gitignore
 403	https://www.linux.com/wp-content/uploads/
+403	https://www.linux.com/wp-includes/
 403	https://www.linux.com/wp-includes/
 403	https://www.linux.com/xmlrpc.php
 404	https://www.linux.com/.env
@@ -45,6 +49,7 @@
 404	https://www.linux.com/phpmyadmin/
 404	https://www.linux.com/pma/
 404	https://www.linux.com/site.zip
+404	https://www.linux.com/wp-login.php
 404	https://www.linux.com/wp-login.php
 404	https://www.linux.com/wp-login.php
 

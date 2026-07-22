@@ -1,68 +1,131 @@
-"""Fingerprint detection using profile modules.
+"""Fingerprint detection focused on lightweight web stack identification.
 
-Strategy:
-- Check for explicit generator metadata (`<meta name="generator">`, `X-Powered-By`) and map to known CMS.
-- If generator not found, delegate to profile modules' `matches()` functions.
+Detection order:
+1) Application/CMS/panel
+2) Framework
+3) Runtime/platform
+4) Web server
 """
-import re
-from importlib import import_module
 from urllib.parse import urljoin
 
-PROFILE_MODULES = [
-    'profiles.wordpress', 'profiles.drupal', 'profiles.joomla',
-    'profiles.magento', 'profiles.laravel', 'profiles.moodle',
-    'profiles.prestashop', 'profiles.opencart', 'profiles.ghost',
-    'profiles.typo3', 'profiles.concrete5', 'profiles.umbraco',
-    'profiles.shopify', 'profiles.silverstripe', 'profiles.dotnetnuke',
-    'profiles.expressionengine', 'profiles.auto'
-]
-
-# common generator mappings (lowercased)
-GENERATOR_MAP = {
-    'wordpress': 'wordpress',
-    'joomla': 'joomla',
-    'drupal': 'drupal',
-    'magento': 'magento',
-    'prestashop': 'prestashop',
-    'shopify': 'shopify',
-    'ghost': 'ghost',
-    'typo3': 'typo3',
-    'concrete5': 'concrete5',
-    'umbraco': 'umbraco',
-}
+from profiles_catalog import DETECTION_PRIORITY, PROFILE_CATEGORIES
 
 
-def _find_generator(headers, body):
-    # check headers first
-    for h in ('x-powered-by', 'server'):
-        v = headers.get(h)
-        if v:
-            v_lower = v.lower()
-            for k in GENERATOR_MAP:
-                if k in v_lower:
-                    return GENERATOR_MAP[k]
+def _header(headers, name):
+    return headers.get(name) or headers.get(name.lower()) or ""
 
-    # check meta generator in body
-    m = re.search(r'<meta[^>]+name=["\']generator["\'][^>]+content=["\']([^"\']+)["\']', body, re.I)
-    if m:
-        g = m.group(1).lower()
-        for k in GENERATOR_MAP:
-            if k in g:
-                return GENERATOR_MAP[k]
 
-    # direct Drupal page markers
-    if re.search(r'class=["\']is-drupal["\']', body, re.I) or re.search(r'drupalsettings', body, re.I) or re.search(r'drupal\.settings', body, re.I):
-        return 'drupal'
+def _has_any(text, tokens):
+    hay = (text or "").lower()
+    return any(t in hay for t in tokens)
 
-    return None
+
+def _collect_text(headers, body):
+    header_blob = " ".join(
+        f"{k}:{v}" for k, v in (headers.items() if hasattr(headers, "items") else [])
+    ).lower()
+    return f"{header_blob}\n{(body or '').lower()}"
+
+
+def _match_rules(headers, body):
+    server = _header(headers, "Server").lower()
+    powered = _header(headers, "X-Powered-By").lower()
+    via = _header(headers, "Via").lower()
+    set_cookie = _header(headers, "Set-Cookie").lower()
+    blob = _collect_text(headers, body)
+
+    rules = {
+        # applications
+        "wordpress": ["wp-content/", "wp-includes/", "wp-json", "wp-admin", "wp-login.php"],
+        "drupal": ["drupalsettings", "drupal.settings", "sites/default/files", "is-drupal"],
+        "joomla": ["/media/system/js/", "joomla!", "option=com_"],
+        "magento": ["mage/cookies.js", "magento", "skin/frontend"],
+        "ghost": ["ghost/content", "ghost.io", "content=\"ghost\""],
+        "moodle": ["moodle", "moodle-session", "course/view.php"],
+        "mediawiki": ["mediawiki", "mw.config", "w/index.php?title="],
+        "jenkins": ["x-jenkins", "jenkins-agent-protocols", "/login?from=%2f"],
+        "grafana": ["grafana", "x-grafana", "public/build/grafana"],
+        "kibana": ["kbn-name", "kibana", "kbn-version"],
+        "sonarqube": ["sonarqube", "js/sonar", "api/system/status"],
+        "gitlab": ["gitlab", "_gitlab_session", "assets/gitlab"],
+        "gitea": ["gitea", "_csrf", "content=\"gitea\""],
+        "portainer": ["portainer", "x-portaineragent", "portainer.io"],
+        "phpmyadmin": ["phpmyadmin", "pmahometext", "pma_"],
+        "adminer": ["adminer", "Login - Adminer".lower(), "name=\"auth[server]\""],
+        "webmin": ["webmin", "session_login.cgi", "x-webmin"],
+        "cpanel": ["cpanel", "whm", "cpsess"],
+        "plesk": ["plesk", "plesk-session-id", "x-plesk"],
+        "directadmin": ["directadmin", "cmd=login", "x-directadmin"],
+        "prestashop": ["prestashop", "modules/", "index.php?controller="],
+        "opencart": ["route=common/home", "catalog/view/theme", "opencart"],
+        "typo3": ["typo3", "typo3conf", "index.php?id="],
+        "concrete5": ["concrete5", "/concrete/", "ccm.token"],
+        "umbraco": ["umbraco", "umbraco_client", "x-umbraco"],
+        "shopify": ["shopify", "cdn.shopify.com", "x-shopify"],
+        "silverstripe": ["silverstripe", "x-powered-by: silverstripe"],
+        "dotnetnuke": ["dotnetnuke", "dnn", "__requestverificationtoken"],
+        "expressionengine": ["expressionengine", "exp_last_visit", "exp_tracker"],
+        # frameworks
+        "laravel": ["laravel", "xsrf-token", "laravel_session"],
+        "symfony": ["symfony", "sf-toolbar", "x-debug-token"],
+        "django": ["csrftoken", "django", "__admin_media_prefix__"],
+        "flask": ["flask", "werkzeug", "session="],
+        "fastapi": ["fastapi", "swagger-ui", "openapi.json"],
+        "express": ["x-powered-by: express", "express"],
+        "rails": ["ruby on rails", "_rails", "actiondispatch"],
+        # runtimes/platform
+        "php": ["php", "phpsessid", "x-powered-by: php"],
+        "aspnet_core": ["asp.net core", "kestrel", "aspnetcore"],
+        "aspnet": ["x-aspnet-version", "asp.net"],
+        "jsp_servlet": ["jsessionid", "jsp", "servlet"],
+        "java_ee": ["java ee", "jakarta", "jsessionid"],
+        "python_wsgi": ["wsgi", "gunicorn", "uwsgi", "werkzeug"],
+        "nodejs": ["node.js", "x-powered-by: express", "npm"],
+        "ruby": ["passenger", "ruby", "rack"],
+        "perl_cgi": ["perl", "cgi-bin"],
+        "go_http": ["golang", "go-http-client", "x-go"],
+        "coldfusion": ["coldfusion", "cfid", "cftoken"],
+    }
+
+    combined = "\n".join([server, powered, via, set_cookie, blob])
+
+    matched = []
+    for profile in DETECTION_PRIORITY:
+        tokens = rules.get(profile, [])
+        if tokens and _has_any(combined, [t.lower() for t in tokens]):
+            matched.append(profile)
+
+    # server-specific detection is more reliable from Server/Via headers.
+    server_rules = {
+        "apache": ["apache"],
+        "nginx": ["nginx"],
+        "iis": ["microsoft-iis"],
+        "litespeed": ["litespeed"],
+        "openlitespeed": ["openlitespeed"],
+        "caddy": ["caddy"],
+        "openresty": ["openresty"],
+        "tomcat": ["tomcat"],
+        "jetty": ["jetty"],
+        "undertow": ["undertow"],
+        "cherokee": ["cherokee"],
+        "lighttpd": ["lighttpd"],
+        "h2o": ["h2o"],
+        "tengine": ["tengine"],
+        "oracle_http_server": ["oracle-http-server", "oracle http server"],
+        "ibm_http_server": ["ibm_http_server", "ibm http server"],
+    }
+    server_blob = " ".join([server, via])
+    for profile, tokens in server_rules.items():
+        if _has_any(server_blob, tokens) and profile not in matched:
+            matched.append(profile)
+
+    if not matched:
+        return None, []
+    return matched[0], matched
 
 
 def detect_profile(session, url, timeout=5.0, follow=True):
-    """Probe `url` and return detected profile name or None.
-
-    Returns a tuple (profile_name, details) where details is a dict with
-    headers and body for debugging.
-    """
+    """Probe target URL and return detected primary profile and details."""
     try:
         r = session.get(url, timeout=timeout, allow_redirects=follow)
         headers = r.headers
@@ -70,46 +133,36 @@ def detect_profile(session, url, timeout=5.0, follow=True):
     except Exception:
         return None, {}
 
-    gen = _find_generator(headers, body)
-    if gen:
-        return gen, {'headers': dict(headers), 'sample': body[:400], 'generator': gen}
+    primary, matched = _match_rules(headers, body)
 
-    # Try probing common admin paths for common CMS as a fallback (non-invasive)
-    ADMIN_PATHS = {
-        'joomla': ['/administrator/', '/administrator/index.php'],
-        'wordpress': ['/wp-admin/', '/wp-login.php'],
-        'drupal': ['/user/', '/node/']
-    }
-
-    for cms, paths in ADMIN_PATHS.items():
-        for p in paths:
-            try:
-                probe_url = urljoin(url.rstrip('/') + '/', p.lstrip('/'))
-                r2 = session.get(probe_url, timeout=timeout, allow_redirects=follow)
-                if r2.status_code and r2.status_code < 500:
-                    body2 = r2.text or ''
-                    # quick heuristics: presence of cms name or admin keywords
-                    if cms in body2.lower() or 'administrator' in body2.lower() or 'wp-' in body2.lower() or 'drupal' in body2.lower():
-                        return cms, {'probe': probe_url, 'status': r2.status_code, 'sample': body2[:400]}
-                    # allow 403 on admin paths as indicator
-                    if r2.status_code in (401, 403):
-                        return cms, {'probe': probe_url, 'status': r2.status_code, 'sample': body2[:200]}
-            except Exception:
-                continue
-
-    # delegate to profile modules
-    for modname in PROFILE_MODULES:
-        try:
-            mod = import_module(modname)
-            matches = getattr(mod, 'matches', None)
-            profile = getattr(mod, 'PROFILE', None)
-            if callable(matches) and profile:
+    # lightweight fallback probe only for admin interfaces with strong signatures
+    if not primary:
+        probes = {
+            "jenkins": ["/login", "/manage"],
+            "grafana": ["/login", "/api/health"],
+            "kibana": ["/login", "/api/status"],
+            "phpmyadmin": ["/phpmyadmin/", "/pma/"],
+        }
+        for profile, paths in probes.items():
+            for path in paths:
                 try:
-                    if matches(headers, body):
-                        return profile, {'headers': dict(headers), 'sample': body[:400]}
+                    probe_url = urljoin(url.rstrip("/") + "/", path.lstrip("/"))
+                    r2 = session.get(probe_url, timeout=timeout, allow_redirects=follow)
+                    b2 = (r2.text or "").lower()
+                    if r2.status_code in (200, 401, 403) and (profile in b2 or profile in str(r2.headers).lower()):
+                        primary = profile
+                        matched = [profile]
+                        break
                 except Exception:
                     continue
-        except Exception:
-            continue
+            if primary:
+                break
 
-    return None, {'headers': dict(headers), 'sample': body[:400]}
+    details = {
+        "headers": dict(headers),
+        "sample": (body or "")[:400],
+        "matches": matched,
+    }
+    if primary:
+        details["category"] = PROFILE_CATEGORIES.get(primary, "unknown")
+    return primary, details

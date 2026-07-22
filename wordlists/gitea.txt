@@ -1,0 +1,6 @@
+robots.txt
+sitemap.xml
+user/login
+explore/repos
+api/v1/version
+api/healthz

@@ -207,4 +207,4 @@ GitHub: https://github.com/AdilsonSiqueira
 
 Donate: https://ko-fi.com/adilsonsiqueira
 
-by AdilsonSiqueira
+Author AdilsonSiqueira

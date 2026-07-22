@@ -1,53 +1,32 @@
 # WebFastRecon
 
-WebFastRecon is a lightweight web stack recon tool focused on identification first and targeted scanning second.
+WebFastRecon e uma ferramenta de varredura rapida para servidor web, focada em identificar tecnologias e executar scan direcionado de caminhos padrao.
 
-What it does
-- Identifies one primary profile in this order: application -> framework -> runtime -> web server.
-- Runs targeted path checks using profile-based wordlists (no broad brute-force).
-- Optionally checks top files and default sensitive paths for the detected/selected profile.
-- Saves reports in `txt`, `json`, or `html`.
-- In `-t auto`, both Python and Rust fingerprint the full stack scope: CMS/app, framework, runtime, and web server.
-- Auto examples covered by detection include: WordPress/Drupal/Joomla, Jenkins/Grafana/Kibana/phpMyAdmin, PHP/Node.js/Python WSGI/ASP.NET, Apache/Nginx/IIS/Tomcat/OpenResty/Caddy.
+Objetivo do projeto:
+- Identificar rapidamente servicos e stack web: CMS/aplicacao, framework, runtime e web server.
+- Evitar brute force amplo, usando wordlists por perfil.
+- Entregar resposta pratica para recon inicial com saida colorida por status HTTP.
 
-Profiles (high level)
-- Web server: Apache, Nginx, IIS, LiteSpeed, OpenLiteSpeed, Caddy, OpenResty, Tomcat, Jetty, Undertow, Cherokee, Lighttpd, H2O, Tengine, Oracle HTTP Server, IBM HTTP Server.
-- Runtime/platform: PHP, ASP.NET, ASP.NET Core, JSP/Servlet, Java EE, Python WSGI, Node.js, Ruby, Perl CGI, Go HTTP, ColdFusion.
+## O que ele faz
+
+- Identifica tecnologias por fingerprint (headers + conteudo).
+- Em modo auto, detecta multiplos perfis (exemplo: WordPress + Nginx).
+- Faz scan de diretorios/arquivos por perfil detectado.
+- No Rust, em auto + scan, separa a varredura por categoria e por perfil.
+- Salva relatorio em txt, json ou html quando output e informado.
+
+Perfis de alto nivel:
+- Web server: Apache, Nginx, IIS, LiteSpeed, OpenLiteSpeed, Caddy, OpenResty, Tomcat, Jetty, Undertow e outros.
+- Runtime/plataforma: PHP, ASP.NET, ASP.NET Core, JSP/Servlet, Java EE, Python WSGI, Node.js, Ruby, Perl CGI, Go HTTP, ColdFusion.
 - Framework: Laravel, Symfony, Django, Flask, FastAPI, Express, Rails.
-- Application/CMS/panel: WordPress, Drupal, Joomla, Magento, Ghost, Moodle, MediaWiki, Jenkins, Grafana, Kibana, SonarQube, GitLab, Gitea, Portainer, phpMyAdmin, Adminer, Webmin, cPanel, Plesk, DirectAdmin and others already in the project.
+- Aplicacao/CMS/painel: WordPress, Drupal, Joomla, Magento, Ghost, Moodle, MediaWiki, Jenkins, Grafana, Kibana, SonarQube, GitLab, Gitea, Portainer, phpMyAdmin, Adminer, Webmin, cPanel, Plesk, DirectAdmin e outros.
 
-Quick usage
-```bash
-python3 webfastrecon.py -u https://target.example -t auto
-```
+## Instalacao (Python)
 
-Targeted scan after identify
-```bash
-python3 webfastrecon.py -u https://target.example -t auto --scan --topfiles
-```
-
-Force a specific profile
-```bash
-python3 webfastrecon.py -u https://target.example -t jenkins -T 8
-```
-
-Save JSON report
-```bash
-python3 webfastrecon.py -u https://target.example -t wordpress -f json -o reports/wp.json
-```
-
-Compatibility command
-```bash
-python3 webfastrecon.py -u https://target.example -t auto
-```
-
-## Instalação
-
-Requisitos mínimos:
+Requisitos:
 - Python 3.8+
-- `git` e acesso à internet
 
-Instalação (Unix / WSL):
+Unix/WSL:
 
 ```bash
 cd /mnt/c/Users/Adilson/Desktop/PROJETOS/webfastrecon
@@ -57,7 +36,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Instalação (Windows PowerShell):
+Windows PowerShell:
 
 ```powershell
 cd C:\Users\Adilson\Desktop\PROJETOS\webfastrecon
@@ -67,69 +46,121 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Uso
+## Instalacao (Rust)
 
-Comportamento do `-t auto` (Python e Rust):
-- Faz identificação ampla de tecnologia (servidor + CMS/app + runtime/framework).
-- Padrão: identifica e para (não inicia varredura).
-- Para varrer depois da identificação, use `--scan`.
+Requisitos:
+- Rust toolchain com Cargo
 
-Exemplos rápidos:
+Build/check:
 
-- Detectar perfil automaticamente e parar após a identificação (Python):
+```bash
+cd rust
+cargo check
+```
+
+## Como usar
+
+### Fluxo recomendado rapido
+
+1. Identificar stack
+2. Rodar scan direcionado
+3. Salvar relatorio quando necessario
+
+### Comportamento de -t auto
+
+Python e Rust:
+- Faz identificacao ampla (aplicacao/CMS + framework + runtime + servidor web).
+- Sem --scan: identifica e encerra.
+- Com --scan: executa varredura direcionada.
+
+### Exemplos Python
+
+Identificar somente:
+
 ```bash
 python3 webfastrecon.py -u https://example.com -t auto
 ```
-- Detectar perfil automaticamente e parar após a identificação (Rust):
-```bash
-cd rust
-cargo run -- -u https://example.com -t auto
-```
-- Forçar a varredura mesmo com `-t auto` (Python):
+
+Identificar e varrer:
+
 ```bash
 python3 webfastrecon.py -u https://example.com -t auto --scan
 ```
-- Forçar a varredura mesmo com `-t auto` (Rust):
-```bash
-cd rust
-cargo run -- -u https://example.com -t auto --scan
-```
-- Scan Joomla com 8 threads e salvar JSON (Python):
-```bash
-python3 webfastrecon.py -u https://example.com -t joomla -T 8 -f json -o report.json
-```
-- Scan Joomla com 8 threads e salvar JSON (Rust):
-```bash
-cd rust
-cargo run -- -u https://example.com -t joomla -T 8 -f json -o report.json
-```
-- Verificar arquivos sensíveis (`--topfiles`) (Python):
+
+Varrer e incluir top files sensiveis:
+
 ```bash
 python3 webfastrecon.py -u https://example.com -t wordpress --topfiles
 ```
-- Verificar arquivos sensíveis (`--topfiles`) (Rust):
+
+Salvar JSON:
+
+```bash
+python3 webfastrecon.py -u https://example.com -t joomla -T 8 -f json -o report.json
+```
+
+### Exemplos Rust
+
+Identificar somente:
+
 ```bash
 cd rust
-cargo run -- -u https://example.com -t wordpress --topfiles
+cargo run -- --url https://example.com -t auto
 ```
-- Apenas identificar tecnologia sem fazer varredura (Python):
-```bash
-python3 webfastrecon.py -u https://example.com -t auto --identify-only
-```
-- Apenas identificar tecnologia sem fazer varredura (Rust):
+
+Identificar e varrer (scan por categoria/perfil detectado):
+
 ```bash
 cd rust
-cargo run -- -u https://example.com -t auto --identify-only
+cargo run -- --url https://example.com -t auto --scan
 ```
 
-### Python vs Rust
+Varrer perfil especifico:
 
-- A versão Python é a mais simples e está pronta para uso direto.
-- A versão Rust é uma alternativa mais performática e mantêm o mesmo fluxo de uso, com comandos parecidos.
-- Ambos aceitam as opções principais: `-u/--url`, `-t/--type`, `-w/--wordlist`, `-T/--threads`, `-o/--output`, `-f/--format`, `--topfiles` e `--identify-only`.
+```bash
+cd rust
+cargo run -- --url https://example.com -t joomla -T 8
+```
 
+Salvar JSON:
 
-## Contato e Doações
+```bash
+cd rust
+cargo run -- --url https://example.com -t joomla -f json -o report.json
+```
+
+### Porta e alvo
+
+- Nao faz port scan.
+- A porta vem da URL informada.
+- Se nao informar porta, usa padrao do protocolo (http 80, https 443).
+- Para porta customizada, informe na URL: https://example.com:8443
+
+### Cores da saida
+
+- 2xx: verde
+- 3xx: amarelo
+- 4xx/5xx: vermelho
+- ERR: vermelho
+
+## Diferencas atuais Python x Rust
+
+- Python:
+	- Ja possui fluxo completo com top files.
+	- Exibe resumo final com agrupamento por status.
+- Rust:
+	- Ja identifica multiplos perfis e escaneia por categoria/perfil no modo auto + scan.
+	- Exibe possivel falso positivo quando um perfil e detectado sem hits nos caminhos de validacao.
+	- Top files no Rust ainda nao esta no mesmo nivel de cobertura do Python.
+
+## Objetivo de performance
+
+WebFastRecon foi pensado para recon inicial rapida, com foco em:
+- baixo ruido
+- alta utilidade pratica
+- identificacao orientada a tecnologia real do alvo
+
+## Contato e Doacoes
 
 GitHub: https://github.com/AdilsonSiqueira
 
